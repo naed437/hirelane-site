@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Candidates — HireLane</title>
+  <meta name="description" content="View AI-sourced candidates for your role.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #f97316;
+      --accent-glow: rgba(249, 115, 22, 0.15);
+      --green: #22c55e;
+      --blue: #3b82f6;
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    a { color: inherit; text-decoration: none; }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(9,9,11,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+    }
+    .nav-link {
+      padding: 8px 16px;
+      font-size: 14px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); }
+    
+    /* Main */
+    main {
+      padding: 100px 24px 60px;
+    }
+    
+    /* Page Header */
+    .page-header {
+      margin-bottom: 40px;
+    }
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+    
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 32px;
+      padding: 20px 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    
+    /* Candidate list */
+    .candidates {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .candidate-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: start;
+      transition: border-color 0.2s;
+    }
+    .candidate-card:hover {
+      border-color: var(--accent);
+    }
+    
+    .candidate-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent) 0%, #ea580c 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    .candidate-info {
+      min-width: 0;
+    }
+    .candidate-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 100px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+    .score-badge.high { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+    .score-badge.medium { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    
+    .candidate-title {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    
+    .candidate-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .detail-item svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
+    }
+    
+    .candidate-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag {
+      padding: 4px 10px;
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+    }
+    
+    .candidate-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.15s;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #ea580c; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg); }
+    
+    /* Why section */
+    .why-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .why-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .why-text {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .candidate-card {
+        grid-template-columns: 1fr;
+      }
+      .candidate-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+      }
+      .candidate-actions {
+        flex-direction: row;
+        margin-top: 12px;
+      }
+      .stats-bar {
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+    }
+    
+    /* Preview banner */
+    .preview-banner {
+      background: linear-gradient(90deg, var(--accent) 0%, #ea580c 100%);
+      color: #fff;
+      padding: 12px 24px;
+      text-align: center;
+      font-size: 14px;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      z-index: 40;
+    }
+    .preview-banner a {
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .has-preview main {
+      padding-top: 140px;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <div class="logo-mark"></div>
+        HireLane
+      </a>
+      <nav>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="pilot-signup.html" class="nav-link">New Search</a>
+      </nav>
+    </div>
+  </header>
+  
+  <div class="preview-banner" id="previewBanner" style="display: none;">
+    🎯 This is a sample preview. <a href="pilot-signup.html">Start your free pilot</a> to see real candidates for your role.
+  </div>
+  
+  <main>
+    <div class="container">
+      <div class="page-header">
+        <h1>Senior Backend Engineer</h1>
+        <p>Acme Inc. · 50 candidates sourced · Updated 2 hours ago</p>
+      </div>
+      
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">50</div>
+          <div class="stat-label">Total Sourced</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">23</div>
+          <div class="stat-label">Contacted</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Responded</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" style="color: var(--green)">8</div>
+          <div class="stat-label">Interested</div>
+        </div>
+      </div>
+      
+      <div class="filter-bar">
+        <button class="filter-btn active">All (50)</button>
+        <button class="filter-btn">Interested (8)</button>
+        <button class="filter-btn">Responded (12)</button>
+        <button class="filter-btn">Pending (11)</button>
+        <button class="filter-btn">Not Interested (4)</button>
+      </div>
+      
+      <div class="candidates">
+        
+        <div class="candidate-card">
+          <div class="candidate-avatar">MC</div>
+          <div class="candidate-info">
+            <div class="candidate-name">
+              Marcus Chen
+              <span class="score-badge high">94 fit</span>
+            </div>
+            <div class="candidate-title">Staff Engineer @ Stripe · 8 years exp</div>
+            <div class="candidate-details">
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                San Francisco, CA
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Open to remote
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Responded: Interested
+              </span>
+            </div>
+            <div class="candidate-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Django</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag">AWS</span>
+              <span class="tag">System Design</span>
+            </div>
+            <div class="why-section">
+              <div class="why-title">Why they're a great match</div>
+              <div class="why-text">8 years of backend experience including 4 at Stripe building payment APIs. Led team of 5 engineers. Published talks on Django performance optimization. Active in SF Python meetup community.</div>
+            </div>
+          </div>
+          <div class="candidate-actions">
+            <button class="btn btn-primary">View Profile</button>
+            <button class="btn btn-ghost">Schedule Call</button>
+          </div>
+        </div>
+        
+        <div class="candidate-card">
+          <div class="candidate-avatar">SP</div>
+          <div class="candidate-info">
+            <div class="candidate-name">
+              Sarah Park
+              <span class="score-badge high">91 fit</span>
+            </div>
+            <div class="candidate-title">Senior Engineer @ Datadog · 6 years exp</div>
+            <div class="candidate-details">
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                New York, NY
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Prefers remote
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Responded: Interested
+              </span>
+            </div>
+            <div class="candidate-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Go</span>
+              <span class="tag">Kubernetes</span>
+              <span class="tag">Redis</span>
+              <span class="tag">API Design</span>
+            </div>
+            <div class="why-section">
+              <div class="why-title">Why they're a great match</div>
+              <div class="why-text">Built high-throughput data pipelines processing 1M+ events/sec. Strong Python background with Go expertise. Contributed to open-source observability tools. Looking for senior IC role with impact.</div>
+            </div>
+          </div>
+          <div class="candidate-actions">
+            <button class="btn btn-primary">View Profile</button>
+            <button class="btn btn-ghost">Schedule Call</button>
+          </div>
+        </div>
+        
+        <div class="candidate-card">
+          <div class="candidate-avatar">JR</div>
+          <div class="candidate-info">
+            <div class="candidate-name">
+              James Rodriguez
+              <span class="score-badge high">89 fit</span>
+            </div>
+            <div class="candidate-title">Backend Lead @ Notion · 7 years exp</div>
+            <div class="candidate-details">
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Austin, TX
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Open to hybrid
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Contacted · Awaiting response
+              </span>
+            </div>
+            <div class="candidate-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag">GraphQL</span>
+              <span class="tag">Team Lead</span>
+            </div>
+            <div class="why-section">
+              <div class="why-title">Why they're a great match</div>
+              <div class="why-text">Led backend team scaling Notion's API from 10K to 500K requests/min. Deep PostgreSQL expertise including query optimization and sharding. Previously at Dropbox working on sync infrastructure.</div>
+            </div>
+          </div>
+          <div class="candidate-actions">
+            <button class="btn btn-primary">View Profile</button>
+            <button class="btn btn-ghost">Follow Up</button>
+          </div>
+        </div>
+        
+        <div class="candidate-card">
+          <div class="candidate-avatar">AK</div>
+          <div class="candidate-info">
+            <div class="candidate-name">
+              Aisha Kumar
+              <span class="score-badge medium">84 fit</span>
+            </div>
+            <div class="candidate-title">Senior Software Engineer @ Shopify · 5 years exp</div>
+            <div class="candidate-details">
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Toronto, Canada
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Remote only
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Responded: Interested
+              </span>
+            </div>
+            <div class="candidate-tags">
+              <span class="tag">Ruby</span>
+              <span class="tag">Python</span>
+              <span class="tag">Rails</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">E-commerce</span>
+            </div>
+            <div class="why-section">
+              <div class="why-title">Why they're a great match</div>
+              <div class="why-text">Built checkout API handling $1B+ in transactions. Strong Python skills from side projects. Open source contributor to Django REST Framework. Seeking growth opportunity at smaller company.</div>
+            </div>
+          </div>
+          <div class="candidate-actions">
+            <button class="btn btn-primary">View Profile</button>
+            <button class="btn btn-ghost">Schedule Call</button>
+          </div>
+        </div>
+        
+        <div class="candidate-card">
+          <div class="candidate-avatar">TN</div>
+          <div class="candidate-info">
+            <div class="candidate-name">
+              Tyler Nguyen
+              <span class="score-badge medium">82 fit</span>
+            </div>
+            <div class="candidate-title">Software Engineer @ Netflix · 4 years exp</div>
+            <div class="candidate-details">
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Los Angeles, CA
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Open to remote
+              </span>
+              <span class="detail-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Contacted · Awaiting response
+              </span>
+            </div>
+            <div class="candidate-tags">
+              <span class="tag">Java</span>
+              <span class="tag">Python</span>
+              <span class="tag">Microservices</span>
+              <span class="tag">Cassandra</span>
+              <span class="tag">Streaming</span>
+            </div>
+            <div class="why-section">
+              <div class="why-title">Why they're a great match</div>
+              <div class="why-text">Works on Netflix's content delivery platform serving 200M+ users. Strong distributed systems experience. Python expertise from internal tooling. Looking for senior role with more ownership.</div>
+            </div>
+          </div>
+          <div class="candidate-actions">
+            <button class="btn btn-primary">View Profile</button>
+            <button class="btn btn-ghost">Follow Up</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container footer-inner">
+      <span>© 2026 HireLane. All rights reserved.</span>
+      <a href="mailto:team@hirelane.io">Need help? team@hirelane.io</a>
+    </div>
+  </footer>
+
+<script>
+  // Check for preview mode
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('preview') === 'true') {
+    document.getElementById('previewBanner').style.display = 'block';
+    document.body.classList.add('has-preview');
+  }
+  
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // In production, this would filter the candidates
+    });
+  });
+  
+  // Action buttons (demo)
+  document.querySelectorAll('.candidate-actions .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (urlParams.get('preview') === 'true') {
+        alert('This is a preview. Start your free pilot to interact with real candidates!');
+      }
+    });
+  });
+</script>
+</body>
+</html>

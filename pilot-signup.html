@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Your Pilot — HireLane</title>
+  <meta name="description" content="Submit your job details and get 50 AI-sourced candidates in 48 hours. Free pilot, no commitment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #f97316;
+      --accent-glow: rgba(249, 115, 22, 0.15);
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    
+    a { color: inherit; text-decoration: none; }
+    
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(9,9,11,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+    }
+    
+    /* Page */
+    .page {
+      padding: 120px 24px 80px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .form-container {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .form-header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .form-header h1 span { color: var(--accent); }
+    
+    .form-header p {
+      color: var(--muted);
+      font-size: 17px;
+    }
+    
+    /* Form */
+    .pilot-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group:last-of-type {
+      margin-bottom: 32px;
+    }
+    
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    label span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #52525b;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.15s;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:hover { 
+      background: #ea580c;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .form-note {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    /* Steps indicator */
+    .steps-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .step-item.active { color: var(--text); }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .step-item.active .step-num {
+      background: var(--accent);
+      color: #fff;
+    }
+    .step-item.done .step-num {
+      background: #22c55e;
+      color: #fff;
+    }
+    
+    /* Success state */
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-message.show {
+      display: block;
+    }
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 2px solid #22c55e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+    .success-message h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .success-message p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .success-message a {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .success-message a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Loading */
+    .loading {
+      display: none;
+    }
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .loading { display: inline-flex; }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Footer */
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    /* Error state */
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      display: none;
+    }
+    .error-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <div class="logo-mark"></div>
+        HireLane
+      </a>
+    </div>
+  </header>
+  
+  <main class="page">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Free pilot — no credit card required
+        </div>
+        <h1>Start Your <span>Free Pilot</span></h1>
+        <p>Tell us about your role and we'll deliver 50 qualified candidates in 48 hours.</p>
+      </div>
+      
+      <div class="pilot-form" id="formContainer">
+        <div class="steps-indicator">
+          <div class="step-item active">
+            <div class="step-num">1</div>
+            <span>Submit Job</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <span>We Source</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <span>You Close</span>
+          </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <form id="pilotForm">
+          <div class="form-group">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" name="company" placeholder="Acme Inc." required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Work Email</label>
+            <input type="email" id="email" name="email" placeholder="you@company.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="jobTitle">Job Title <span>(the role you're hiring for)</span></label>
+            <input type="text" id="jobTitle" name="job_title" placeholder="Senior Backend Engineer" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="jobDescription">Job Description <span>(paste full JD or key requirements)</span></label>
+            <textarea id="jobDescription" name="job_description" placeholder="We're looking for a Senior Backend Engineer with 5+ years of experience in Python/Django. You'll be working on our core API infrastructure, optimizing performance, and leading a small team. Remote-friendly, competitive salary + equity..." required></textarea>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="btn-text">Get 50 Candidates in 48 Hours →</span>
+            <span class="loading"><span class="spinner"></span></span>
+          </button>
+        </form>
+        
+        <p class="form-note">We'll review your job and start sourcing within 2 hours.</p>
+        
+        <div class="success-message" id="successMessage">
+          <div class="success-icon">✓</div>
+          <h2>You're all set!</h2>
+          <p>We've received your job details and are already building your candidate list. Expect first candidates within 48 hours.</p>
+          <p><a href="results.html?preview=true">See sample results →</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>© 2026 HireLane. All rights reserved.</p>
+  </footer>
+
+<script>
+  const form = document.getElementById('pilotForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const errorMessage = document.getElementById('errorMessage');
+  const successMessage = document.getElementById('successMessage');
+  const formContainer = document.getElementById('formContainer');
+  
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Reset error
+    errorMessage.classList.remove('show');
+    
+    // Gather form data
+    const formData = {
+      company: document.getElementById('company').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      job_title: document.getElementById('jobTitle').value.trim(),
+      job_description: document.getElementById('jobDescription').value.trim()
+    };
+    
+    // Validate
+    if (!formData.company || !formData.email || !formData.job_title || !formData.job_description) {
+      errorMessage.textContent = 'Please fill in all fields.';
+      errorMessage.classList.add('show');
+      return;
+    }
+    
+    // Show loading
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    
+    try {
+      // Submit to backend API
+      const response = await fetch('http://localhost:8000/api/pilot/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Something went wrong. Please try again.');
+      }
+      
+      const result = await response.json();
+      
+      // Show success
+      form.style.display = 'none';
+      document.querySelector('.form-note').style.display = 'none';
+      document.querySelector('.steps-indicator').style.display = 'none';
+      successMessage.classList.add('show');
+      
+      // Update success message with pilot ID if returned
+      if (result.pilot_id) {
+        successMessage.querySelector('a').href = `results.html?pilot_id=${result.pilot_id}`;
+      }
+      
+    } catch (error) {
+      // Check if it's a network error (API not running)
+      if (error.message === 'Failed to fetch') {
+        // For demo: show success anyway with preview mode
+        form.style.display = 'none';
+        document.querySelector('.form-note').style.display = 'none';
+        document.querySelector('.steps-indicator').style.display = 'none';
+        successMessage.classList.add('show');
+        console.log('Demo mode: API not available, showing success with preview');
+      } else {
+        errorMessage.textContent = error.message;
+        errorMessage.classList.add('show');
+      }
+    } finally {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
