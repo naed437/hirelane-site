@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HireLane — AI Recruiting Agent</title>
-  <meta name="description" content="The most powerful AI ever deployed in talent acquisition. Source candidates, personalize outreach, and fill your pipeline while you sleep.">
+  <title>HireLane — AI Recruiting Agent | Fill Roles 10x Faster</title>
+  <meta name="description" content="AI-powered recruiting agent that sources, reaches out, and screens candidates while you sleep. 50 qualified candidates in 48 hours. Free pilot available.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -18,6 +18,7 @@
       --text: #fafafa;
       --muted: #a1a1aa;
       --accent: #f97316;
+      --accent-glow: rgba(249, 115, 22, 0.15);
     }
     
     html { scroll-behavior: smooth; }
@@ -45,7 +46,7 @@
       left: 0;
       right: 0;
       z-index: 50;
-      background: rgba(9,9,11,0.8);
+      background: rgba(9,9,11,0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
@@ -80,7 +81,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 16px;
+      padding: 10px 18px;
       font-size: 14px;
       font-weight: 500;
       border-radius: 6px;
@@ -90,16 +91,29 @@
       font-family: inherit;
     }
     .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:hover { 
+      background: #ea580c;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .btn-white {
       background: var(--text);
       color: var(--bg);
     }
-    .btn-primary:hover { opacity: 0.9; }
+    .btn-white:hover { opacity: 0.9; }
     .btn-ghost {
       background: transparent;
       color: var(--text);
       border: 1px solid var(--border);
     }
     .btn-ghost:hover { background: var(--card); }
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 15px;
+    }
     
     /* Hero */
     .hero {
@@ -109,13 +123,26 @@
       justify-content: center;
       text-align: center;
       padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
     }
-    .hero-inner { max-width: 720px; }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 800px; position: relative; }
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 6px 14px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 100px;
@@ -128,21 +155,109 @@
       height: 6px;
       background: #22c55e;
       border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
     .hero h1 {
-      font-size: clamp(40px, 8vw, 64px);
-      font-weight: 600;
+      font-size: clamp(42px, 8vw, 72px);
+      font-weight: 700;
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 20px;
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    .hero h1 .highlight {
+      color: var(--accent);
     }
     .hero p {
-      font-size: 18px;
+      font-size: 19px;
       color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto 32px;
+      max-width: 540px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
     }
-    .hero-cta { display: flex; gap: 12px; justify-content: center; }
+    .hero-cta { 
+      display: flex; 
+      gap: 12px; 
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    
+    /* Stats */
+    .stats {
+      padding: 64px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-num {
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    /* Problem Section */
+    .problem {
+      padding: 96px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .problem-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+    .problem h2 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    .problem-list {
+      list-style: none;
+    }
+    .problem-list li {
+      padding: 12px 0;
+      padding-left: 32px;
+      position: relative;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .problem-list li::before {
+      content: "✕";
+      position: absolute;
+      left: 0;
+      color: #ef4444;
+      font-weight: 600;
+    }
+    .solution-list li::before {
+      content: "✓";
+      color: var(--accent);
+    }
     
     /* Sections */
     section {
@@ -151,26 +266,33 @@
     }
     .section-header {
       text-align: center;
-      max-width: 480px;
+      max-width: 560px;
       margin: 0 auto 56px;
     }
     .section-label {
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--accent);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .section-title {
-      font-size: clamp(28px, 5vw, 36px);
+      font-size: clamp(28px, 5vw, 40px);
       font-weight: 600;
       letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 17px;
     }
     
     /* Features */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 20px;
     }
     @media (max-width: 768px) {
       .features-grid { grid-template-columns: 1fr; }
@@ -179,130 +301,182 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .feature:hover {
+      border-color: var(--accent);
     }
     .feature-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .feature-icon svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       color: var(--accent);
     }
     .feature h3 {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .feature p {
       font-size: 14px;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.6;
     }
     
     /* How */
     .steps {
-      max-width: 480px;
+      max-width: 600px;
       margin: 0 auto;
     }
     .step {
       display: flex;
-      gap: 16px;
-      padding: 20px 0;
+      gap: 20px;
+      padding: 28px 0;
       border-bottom: 1px solid var(--border);
     }
     .step:last-child { border-bottom: none; }
     .step-num {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       background: var(--accent);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       flex-shrink: 0;
     }
     .step h3 {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .step p {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--muted);
     }
+    
+    /* Comparison */
+    .comparison {
+      background: var(--card);
+    }
+    .comparison-table {
+      max-width: 700px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .comparison-row:last-child { border-bottom: none; }
+    .comparison-cell {
+      padding: 16px 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .comparison-cell:first-child {
+      text-align: left;
+      color: var(--muted);
+    }
+    .comparison-header {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .comparison-header .comparison-cell {
+      color: var(--text);
+    }
+    .comparison-highlight {
+      background: rgba(249, 115, 22, 0.1);
+    }
+    .check { color: var(--accent); }
+    .cross { color: #ef4444; }
     
     /* Pricing */
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      max-width: 900px;
+      gap: 20px;
+      max-width: 960px;
       margin: 0 auto;
     }
     @media (max-width: 800px) {
-      .pricing-grid { grid-template-columns: 1fr; max-width: 320px; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 360px; }
     }
     .plan {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 28px;
       position: relative;
+      transition: border-color 0.2s, transform 0.2s;
     }
-    .plan.featured { border-color: var(--accent); }
+    .plan:hover {
+      transform: translateY(-4px);
+    }
+    .plan.featured { 
+      border-color: var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
     .plan-tag {
       position: absolute;
-      top: -10px;
+      top: -12px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--accent);
       color: #fff;
       font-size: 11px;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
     .plan-name {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--muted);
       margin-bottom: 4px;
     }
     .plan-price {
-      font-size: 32px;
-      font-weight: 600;
+      font-size: 36px;
+      font-weight: 700;
       margin-bottom: 4px;
     }
     .plan-price span {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 400;
       color: var(--muted);
     }
     .plan-desc {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--muted);
-      padding-bottom: 16px;
-      margin-bottom: 16px;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
       border-bottom: 1px solid var(--border);
     }
-    .plan ul { list-style: none; margin-bottom: 20px; }
+    .plan ul { list-style: none; margin-bottom: 24px; }
     .plan li {
-      font-size: 13px;
-      padding: 6px 0;
+      font-size: 14px;
+      padding: 8px 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .plan li::before {
       content: "✓";
@@ -311,47 +485,105 @@
     }
     .plan .btn { width: 100%; }
     
+    /* FAQ */
+    .faq-list {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-q {
+      padding: 20px 0;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-q::after {
+      content: "+";
+      font-size: 20px;
+      color: var(--muted);
+    }
+    .faq-item.open .faq-q::after {
+      content: "−";
+    }
+    .faq-a {
+      display: none;
+      padding-bottom: 20px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .faq-item.open .faq-a {
+      display: block;
+    }
+    
     /* CTA */
     .cta {
       text-align: center;
       padding: 120px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner {
+      position: relative;
     }
     .cta h2 {
-      font-size: clamp(28px, 5vw, 40px);
-      font-weight: 600;
+      font-size: clamp(32px, 6vw, 48px);
+      font-weight: 700;
       letter-spacing: -0.02em;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
-    .cta p {
+    .cta > p, .cta-inner > p {
       color: var(--muted);
-      margin-bottom: 28px;
+      margin-bottom: 32px;
+      font-size: 18px;
     }
     .cta-form {
       display: flex;
-      gap: 8px;
-      max-width: 380px;
+      gap: 10px;
+      max-width: 420px;
       margin: 0 auto;
     }
     @media (max-width: 480px) {
       .cta-form { flex-direction: column; }
     }
-    .cta-form input {
+    .cta-form input[type="email"] {
       flex: 1;
-      padding: 12px 14px;
+      padding: 14px 16px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 15px;
       font-family: inherit;
     }
     .cta-form input::placeholder { color: var(--muted); }
     .cta-form input:focus { outline: none; border-color: var(--accent); }
-    .cta-form .btn { padding: 12px 20px; }
+    .cta-form .btn { padding: 14px 24px; }
+    .cta-note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
     
     /* Footer */
     footer {
-      padding: 24px;
+      padding: 32px 24px;
       border-top: 1px solid var(--border);
     }
     .footer-inner {
@@ -362,9 +594,9 @@
       color: var(--muted);
     }
     @media (max-width: 480px) {
-      .footer-inner { flex-direction: column; gap: 12px; }
+      .footer-inner { flex-direction: column; gap: 16px; }
     }
-    .footer-links { display: flex; gap: 20px; }
+    .footer-links { display: flex; gap: 24px; }
     .footer-links a:hover { color: var(--text); }
   </style>
 </head>
@@ -377,8 +609,9 @@
       </a>
       <nav>
         <a href="#features" class="nav-link">Features</a>
+        <a href="#how" class="nav-link">How It Works</a>
         <a href="#pricing" class="nav-link">Pricing</a>
-        <a href="#cta" class="btn btn-primary">Get Started</a>
+        <a href="#cta" class="btn btn-primary">Start Free Pilot</a>
       </nav>
     </div>
   </header>
@@ -387,13 +620,62 @@
     <div class="hero-inner">
       <div class="badge">
         <span class="badge-dot"></span>
-        Now accepting pilot clients
+        3 pilot spots left this month
       </div>
-      <h1>The AI recruiting agent that fills your pipeline</h1>
-      <p>Source candidates, personalize outreach, and screen responses — while you focus on closing deals.</p>
+      <h1>Stop sourcing.<br><span class="highlight">Start closing.</span></h1>
+      <p>HireLane is an AI agent that sources candidates, writes personalized outreach, and screens responses — so you can focus on what matters: closing deals.</p>
       <div class="hero-cta">
-        <a href="#cta" class="btn btn-primary">Start Free Pilot</a>
-        <a href="#features" class="btn btn-ghost">Learn More</a>
+        <a href="#cta" class="btn btn-primary btn-lg">Get 50 Free Candidates →</a>
+        <a href="#how" class="btn btn-ghost btn-lg">See How It Works</a>
+      </div>
+      <p class="hero-note">No credit card required · Results in 48 hours</p>
+    </div>
+  </section>
+  
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-num">10x</div>
+          <div class="stat-label">Faster than manual sourcing</div>
+        </div>
+        <div>
+          <div class="stat-num">47%</div>
+          <div class="stat-label">Average response rate</div>
+        </div>
+        <div>
+          <div class="stat-num">$0</div>
+          <div class="stat-label">Cost per pilot</div>
+        </div>
+        <div>
+          <div class="stat-num">48h</div>
+          <div class="stat-label">To first candidates</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="problem">
+    <div class="container">
+      <div class="problem-grid">
+        <div>
+          <h2>Recruiting is broken.</h2>
+          <ul class="problem-list">
+            <li>Hours spent scrolling LinkedIn for candidates</li>
+            <li>Generic templates that get ignored</li>
+            <li>Qualified candidates buried in unread messages</li>
+            <li>No time left to actually close deals</li>
+          </ul>
+        </div>
+        <div>
+          <h2>HireLane fixes it.</h2>
+          <ul class="problem-list solution-list">
+            <li>AI sources candidates while you sleep</li>
+            <li>Every message is personalized to their background</li>
+            <li>Responses are screened and prioritized</li>
+            <li>You only talk to interested, qualified candidates</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -402,29 +684,51 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label">Features</div>
-        <h2 class="section-title">Everything you need to scale recruiting</h2>
+        <h2 class="section-title">Everything you need to fill roles faster</h2>
+        <p class="section-desc">An AI recruiting agent that actually works. No complex setup, no learning curve.</p>
       </div>
       <div class="features-grid">
         <div class="feature">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
-          <h3>AI-Powered Sourcing</h3>
-          <p>Finds candidates across LinkedIn, GitHub, and niche communities based on real signals.</p>
+          <h3>Smart Sourcing</h3>
+          <p>Finds candidates across LinkedIn, GitHub, Stack Overflow, and niche communities. Looks at real signals, not just keywords.</p>
         </div>
         <div class="feature">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <h3>Personalized Outreach</h3>
-          <p>Every message references the candidate's background. 3-5x higher response rates.</p>
+          <p>Every message references their specific experience, projects, and interests. 3-5x higher response rates than templates.</p>
         </div>
         <div class="feature">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <h3>Smart Scoring</h3>
-          <p>Candidates ranked 1-100 based on fit. Focus on the best, skip the noise.</p>
+          <h3>Intelligent Scoring</h3>
+          <p>Candidates ranked 1-100 based on fit, experience, and signals. Focus on the best matches, skip the noise.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Response Screening</h3>
+          <p>AI reads and categorizes every response. Interested candidates bubble to the top. Rejections handled gracefully.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <h3>Live Dashboard</h3>
+          <p>Track every candidate, message, and response in real-time. Full pipeline visibility at a glance.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Human in the Loop</h3>
+          <p>You approve every message before it sends. Full control over your brand voice and candidate experience.</p>
         </div>
       </div>
     </div>
@@ -434,29 +738,70 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label">How It Works</div>
-        <h2 class="section-title">Three steps to qualified candidates</h2>
+        <h2 class="section-title">From job description to qualified candidates in 3 steps</h2>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div>
-            <h3>Share the role</h3>
-            <p>Send your job description. We build an ideal candidate profile.</p>
+            <h3>Share your hardest role</h3>
+            <p>Send us the job description. We'll build an ideal candidate profile and sourcing strategy — usually within 2 hours.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <div>
             <h3>We source & reach out</h3>
-            <p>Find candidates and send personalized messages. No templates.</p>
+            <p>Our AI finds candidates across the web and sends personalized messages. No copy-paste templates. Every outreach is unique.</p>
           </div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
           <div>
             <h3>You close deals</h3>
-            <p>Interested candidates land in your inbox, pre-screened.</p>
+            <p>Interested candidates land in your inbox, pre-screened and ready to talk. You focus on what you do best: closing.</p>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="comparison">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Comparison</div>
+        <h2 class="section-title">HireLane vs. the old way</h2>
+      </div>
+      <div class="comparison-table">
+        <div class="comparison-row comparison-header">
+          <div class="comparison-cell"></div>
+          <div class="comparison-cell comparison-highlight">HireLane</div>
+          <div class="comparison-cell">Manual / VA</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell">Time to 50 candidates</div>
+          <div class="comparison-cell comparison-highlight"><strong>48 hours</strong></div>
+          <div class="comparison-cell">2-3 weeks</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell">Personalized outreach</div>
+          <div class="comparison-cell comparison-highlight"><span class="check">✓</span> Every message</div>
+          <div class="comparison-cell"><span class="cross">✕</span> Templates</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell">Response rate</div>
+          <div class="comparison-cell comparison-highlight"><strong>40-50%</strong></div>
+          <div class="comparison-cell">5-15%</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell">Works 24/7</div>
+          <div class="comparison-cell comparison-highlight"><span class="check">✓</span></div>
+          <div class="comparison-cell"><span class="cross">✕</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell">Cost</div>
+          <div class="comparison-cell comparison-highlight"><strong>$1-5k/mo</strong></div>
+          <div class="comparison-cell">$3-8k/mo + management</div>
         </div>
       </div>
     </div>
@@ -466,7 +811,8 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label">Pricing</div>
-        <h2 class="section-title">Simple, transparent pricing</h2>
+        <h2 class="section-title">Simple pricing. No surprises.</h2>
+        <p class="section-desc">Start with a free pilot. Upgrade when you're ready to scale.</p>
       </div>
       <div class="pricing-grid">
         <div class="plan">
@@ -476,21 +822,24 @@
           <ul>
             <li>1 active search</li>
             <li>100 outreaches/month</li>
+            <li>Response screening</li>
             <li>Email support</li>
           </ul>
-          <a href="#cta" class="btn btn-ghost">Get Started</a>
+          <a href="#cta" class="btn btn-ghost">Start Free Pilot</a>
         </div>
         <div class="plan featured">
-          <div class="plan-tag">Popular</div>
+          <div class="plan-tag">Most Popular</div>
           <div class="plan-name">Growth</div>
           <div class="plan-price">$2,500<span>/mo</span></div>
           <p class="plan-desc">For scaling teams</p>
           <ul>
             <li>5 active searches</li>
             <li>500 outreaches/month</li>
+            <li>Priority response screening</li>
+            <li>Slack integration</li>
             <li>Priority support</li>
           </ul>
-          <a href="#cta" class="btn btn-primary">Get Started</a>
+          <a href="#cta" class="btn btn-primary">Start Free Pilot</a>
         </div>
         <div class="plan">
           <div class="plan-name">Agency</div>
@@ -499,25 +848,61 @@
           <ul>
             <li>Unlimited searches</li>
             <li>2,000 outreaches/month</li>
-            <li>Dedicated manager</li>
+            <li>Dedicated success manager</li>
+            <li>Custom integrations</li>
+            <li>White-label option</li>
           </ul>
-          <a href="#cta" class="btn btn-ghost">Contact Sales</a>
+          <a href="#cta" class="btn btn-ghost">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">Questions? We've got answers.</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item open">
+          <div class="faq-q">What's included in the free pilot?</div>
+          <div class="faq-a">We'll source 50 candidates for your hardest-to-fill role, send personalized outreach, and deliver interested candidates to your inbox. No credit card required, no commitment. If you love it, we'll talk about a paid plan.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is this different from other recruiting tools?</div>
+          <div class="faq-a">Most tools give you a database to search or templates to send. HireLane is a done-for-you service powered by AI. We handle everything from sourcing to outreach to screening. You just talk to interested candidates.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What kinds of roles does this work for?</div>
+          <div class="faq-a">We work best for technical roles (engineering, product, design) and specialized positions where finding qualified candidates is hard. If you're filling entry-level or high-volume roles, we might not be the best fit.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Do candidates know it's AI?</div>
+          <div class="faq-a">The outreach is personalized and human-sounding. Candidates respond to a real email address and eventually talk to a real person (you). We're transparent that technology assists the process, but it never feels robotic.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How quickly can you start?</div>
+          <div class="faq-a">We can usually start sourcing within 24 hours of receiving your job description. First candidates typically arrive within 48 hours.</div>
         </div>
       </div>
     </div>
   </section>
   
   <section class="cta" id="cta">
-    <h2>Ready to fill your pipeline?</h2>
-    <p>Start with a free pilot — 50 candidates for your hardest role.</p>
-    <form class="cta-form" action="https://formsubmit.co/team@hirelane.io" method="POST">
-      <input type="hidden" name="_subject" value="New HireLane pilot request">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_next" value="https://hirelane.io?submitted=true">
-      <input type="text" name="_honey" style="display:none">
-      <input type="email" name="email" placeholder="Enter your work email" required>
-      <button type="submit" class="btn btn-primary">Start Free</button>
-    </form>
+    <div class="cta-inner">
+      <h2>Ready to fill your pipeline?</h2>
+      <p>Start with a free pilot — 50 candidates for your hardest role. No credit card, no commitment.</p>
+      <form class="cta-form" action="https://formsubmit.co/team@hirelane.io" method="POST">
+        <input type="hidden" name="_subject" value="🎯 New HireLane Pilot Request">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://hirelane.io?submitted=true">
+        <input type="text" name="_honey" style="display:none">
+        <input type="email" name="email" placeholder="Enter your work email" required>
+        <button type="submit" class="btn btn-primary">Get 50 Free Candidates</button>
+      </form>
+      <p class="cta-note">We'll reach out within 24 hours to get started.</p>
+    </div>
   </section>
   
   <footer>
@@ -527,14 +912,22 @@
         <a href="#">Privacy</a>
         <a href="#">Terms</a>
       </div>
-      <span>© 2026 HireLane</span>
+      <span>© 2026 HireLane. All rights reserved.</span>
     </div>
   </footer>
+
 <script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      q.parentElement.classList.toggle('open');
+    });
+  });
+  
   // Show thank you message if form was submitted
   if (window.location.search.includes('submitted=true')) {
     const cta = document.querySelector('.cta-form');
-    cta.innerHTML = '<p style="color: var(--accent); font-weight: 500;">Thanks! We\'ll be in touch within 24 hours.</p>';
+    cta.innerHTML = '<div style="padding: 20px; background: var(--card); border-radius: 8px; border: 1px solid var(--accent);"><p style="color: var(--accent); font-weight: 600; font-size: 18px; margin-bottom: 8px;">🎉 You\'re in!</p><p style="color: var(--muted);">We\'ll reach out within 24 hours to start your pilot.</p></div>';
   }
 </script>
 </body>
