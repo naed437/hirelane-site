@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireLane Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #f97316;
+      --green: #22c55e;
+      --red: #ef4444;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: 24px; font-weight: 600; margin-bottom: 24px; }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--accent); }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-label { font-size: 13px; color: var(--muted); }
+    
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    td { font-size: 14px; }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge.pending { background: #fef3c7; color: #92400e; }
+    .badge.active { background: #dcfce7; color: #166534; }
+    .badge.completed { background: #dbeafe; color: #1e40af; }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn:hover { opacity: 0.9; }
+    
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+    
+    #error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 HireLane Admin</h1>
+    
+    <div id="error"></div>
+    
+    <div class="stats-grid" id="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-pilots">-</div>
+        <div class="stat-label">Pilot Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-campaigns">-</div>
+        <div class="stat-label">Active Campaigns</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-candidates">-</div>
+        <div class="stat-label">Candidates Sourced</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green" id="stat-interested">-</div>
+        <div class="stat-label">Interested</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>📬 Pilot Requests</h2>
+      <table id="pilots-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="pilots-body">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="section">
+      <h2>📋 Campaigns</h2>
+      <table id="campaigns-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Role</th>
+            <th>Candidates</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="campaigns-body">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8000/api';
+    
+    async function fetchData(endpoint) {
+      try {
+        const res = await fetch(API_BASE + endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        showError(`Failed to fetch ${endpoint}: ${err.message}`);
+        return null;
+      }
+    }
+    
+    function showError(msg) {
+      const el = document.getElementById('error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    
+    function formatDate(iso) {
+      if (!iso) return '-';
+      return new Date(iso).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    }
+    
+    async function loadStats() {
+      const stats = await fetchData('/stats');
+      if (stats) {
+        document.getElementById('stat-pilots').textContent = stats.pilots?.total || 0;
+        document.getElementById('stat-campaigns').textContent = stats.campaigns?.active || 0;
+        document.getElementById('stat-candidates').textContent = stats.candidates?.total || 0;
+        document.getElementById('stat-interested').textContent = stats.candidates?.interested || 0;
+      }
+    }
+    
+    async function loadPilots() {
+      const data = await fetchData('/pilots');
+      const tbody = document.getElementById('pilots-body');
+      
+      if (!data || !data.pilots || data.pilots.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">No pilot requests yet</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = data.pilots.map(p => `
+        <tr>
+          <td>${p.email}</td>
+          <td>${p.company || '-'}</td>
+          <td>${p.role_title || '-'}</td>
+          <td><span class="badge ${p.status}">${p.status}</span></td>
+          <td>${formatDate(p.created_at)}</td>
+          <td>
+            <button class="btn btn-ghost" onclick="startCampaign('${p.id}')">Start Campaign</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    async function loadCampaigns() {
+      const data = await fetchData('/campaigns');
+      const tbody = document.getElementById('campaigns-body');
+      
+      if (!data || !data.campaigns || data.campaigns.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">No campaigns yet</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = data.campaigns.map(c => `
+        <tr>
+          <td>${c.client_email}</td>
+          <td>${c.job?.title || '-'}</td>
+          <td>${c.candidates?.length || 0}</td>
+          <td><span class="badge ${c.status}">${c.status}</span></td>
+          <td>${formatDate(c.created_at)}</td>
+          <td>
+            <button class="btn btn-ghost" onclick="viewCampaign('${c.id}')">View</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function startCampaign(pilotId) {
+      alert('Campaign creation coming soon! For now, create via API.');
+    }
+    
+    function viewCampaign(campaignId) {
+      alert('Campaign detail view coming soon!');
+    }
+    
+    // Load data on page load
+    loadStats();
+    loadPilots();
+    loadCampaigns();
+    
+    // Refresh every 30s
+    setInterval(() => {
+      loadStats();
+      loadPilots();
+      loadCampaigns();
+    }, 30000);
+  </script>
+</body>
+</html>
