@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — HireLane | AI Recruiting Agent</title>
+  <meta name="description" content="Simple, transparent pricing for AI-powered recruiting. Choose the plan that fits your hiring needs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #f97316;
+      --accent-glow: rgba(249, 115, 22, 0.15);
+      --success: #22c55e;
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    a { color: inherit; text-decoration: none; }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(9,9,11,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+    }
+    nav { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      padding: 8px 16px;
+      font-size: 14px;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.15s;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:hover { 
+      background: #ea580c;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--card);
+      border-color: var(--muted);
+    }
+    .btn-large {
+      padding: 14px 28px;
+      font-size: 16px;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* Hero */
+    .hero {
+      padding: 140px 0 60px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    
+    /* Pricing Grid */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding-bottom: 100px;
+    }
+    @media (max-width: 900px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+    }
+    
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .pricing-card:hover {
+      border-color: var(--muted);
+      transform: translateY(-4px);
+    }
+    .pricing-card.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .plan-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .plan-description {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .plan-price {
+      margin-bottom: 24px;
+    }
+    .price-amount {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .price-period {
+      color: var(--muted);
+      font-size: 16px;
+    }
+    
+    .plan-features {
+      list-style: none;
+      margin-bottom: 32px;
+      flex-grow: 1;
+    }
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .plan-features li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .plan-cta {
+      width: 100%;
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .faq-section h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 48px;
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    @media (max-width: 700px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .faq-item h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .faq-item p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    /* Loading state */
+    .loading {
+      position: relative;
+      pointer-events: none;
+    }
+    .loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      left: 50%;
+      top: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Guarantee badge */
+    .guarantee {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .guarantee-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 16px 32px;
+    }
+    .guarantee-badge svg {
+      width: 32px;
+      height: 32px;
+      color: var(--success);
+    }
+    .guarantee-text {
+      text-align: left;
+    }
+    .guarantee-text strong {
+      display: block;
+      font-size: 14px;
+    }
+    .guarantee-text span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <div class="logo-mark"></div>
+        HireLane
+      </a>
+      <nav>
+        <a href="/#how-it-works" class="nav-link">How It Works</a>
+        <a href="/pricing.html" class="nav-link" style="color: var(--text);">Pricing</a>
+        <a href="/pilot-signup.html" class="btn btn-primary">Start Free Pilot</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Simple, transparent pricing</h1>
+        <p>Choose the plan that matches your hiring volume. All plans include full AI-powered recruiting capabilities.</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="pricing-card" data-plan="starter">
+          <h3 class="plan-name">Starter</h3>
+          <p class="plan-description">Perfect for small teams hiring occasionally</p>
+          <div class="plan-price">
+            <span class="price-amount">$1,000</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li>50 qualified candidates/month</li>
+            <li>1 active role at a time</li>
+            <li>AI-generated outreach</li>
+            <li>Response screening</li>
+            <li>Email support</li>
+          </ul>
+          <button class="btn btn-secondary btn-large plan-cta" onclick="startCheckout('starter')">
+            Get Started
+          </button>
+        </div>
+
+        <!-- Growth (Featured) -->
+        <div class="pricing-card featured" data-plan="growth">
+          <h3 class="plan-name">Growth</h3>
+          <p class="plan-description">For growing teams with consistent hiring needs</p>
+          <div class="plan-price">
+            <span class="price-amount">$2,500</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li>200 qualified candidates/month</li>
+            <li>5 active roles</li>
+            <li>AI-generated outreach</li>
+            <li>Response screening</li>
+            <li>Custom outreach templates</li>
+            <li>Priority support</li>
+            <li>Weekly strategy calls</li>
+          </ul>
+          <button class="btn btn-primary btn-large plan-cta" onclick="startCheckout('growth')">
+            Get Started
+          </button>
+        </div>
+
+        <!-- Agency -->
+        <div class="pricing-card" data-plan="agency">
+          <h3 class="plan-name">Agency</h3>
+          <p class="plan-description">For agencies and high-volume hiring</p>
+          <div class="plan-price">
+            <span class="price-amount">$5,000</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="plan-features">
+            <li>Unlimited candidates</li>
+            <li>Unlimited active roles</li>
+            <li>AI-generated outreach</li>
+            <li>Response screening</li>
+            <li>Custom outreach templates</li>
+            <li>Dedicated account manager</li>
+            <li>API access</li>
+            <li>White-label options</li>
+            <li>Custom integrations</li>
+          </ul>
+          <button class="btn btn-secondary btn-large plan-cta" onclick="startCheckout('agency')">
+            Get Started
+          </button>
+        </div>
+      </div>
+
+      <div class="guarantee">
+        <div class="guarantee-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <div class="guarantee-text">
+            <strong>30-Day Money Back Guarantee</strong>
+            <span>Not satisfied? Get a full refund, no questions asked.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <h3>Can I try before I buy?</h3>
+            <p>Yes! We offer a free pilot where we source 50 candidates for one role at no cost. <a href="/pilot-signup.html" style="color: var(--accent);">Start your free pilot →</a></p>
+          </div>
+          <div class="faq-item">
+            <h3>What's a "qualified candidate"?</h3>
+            <p>A qualified candidate matches your ideal profile criteria and has been scored 70+ by our AI. We only count candidates that actually fit your requirements.</p>
+          </div>
+          <div class="faq-item">
+            <h3>Can I change plans anytime?</h3>
+            <p>Absolutely. Upgrade or downgrade anytime. Changes take effect on your next billing cycle. No lock-in contracts.</p>
+          </div>
+          <div class="faq-item">
+            <h3>How does billing work?</h3>
+            <p>We bill monthly via credit card through Stripe. You can cancel anytime and maintain access until the end of your billing period.</p>
+          </div>
+          <div class="faq-item">
+            <h3>Do unused candidates roll over?</h3>
+            <p>Unused candidate quota does not roll over month-to-month. However, we can discuss custom arrangements for Agency plans.</p>
+          </div>
+          <div class="faq-item">
+            <h3>What if I need more candidates?</h3>
+            <p>You can upgrade to a higher plan anytime, or contact us about overage rates for one-time spikes in hiring.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 HireLane. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // API base URL - change for production
+    const API_URL = 'https://api.hirelane.co'; // or http://localhost:8000 for local dev
+    
+    // Initialize Stripe with publishable key
+    let stripe = null;
+    
+    async function initStripe() {
+      try {
+        const response = await fetch(`${API_URL}/api/stripe/config`);
+        const config = await response.json();
+        stripe = Stripe(config.publishable_key);
+      } catch (error) {
+        console.error('Failed to initialize Stripe:', error);
+      }
+    }
+    
+    async function startCheckout(plan) {
+      const button = document.querySelector(`[data-plan="${plan}"] .plan-cta`);
+      const originalText = button.textContent;
+      
+      try {
+        button.disabled = true;
+        button.textContent = 'Loading...';
+        button.classList.add('loading');
+        
+        // Create checkout session
+        const response = await fetch(`${API_URL}/api/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            plan: plan,
+            success_url: window.location.origin + '/payment-success.html?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: window.location.origin + '/pricing.html'
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.checkout_url) {
+          // Redirect to Stripe Checkout
+          window.location.href = data.checkout_url;
+        } else {
+          throw new Error(data.detail || 'Failed to create checkout session');
+        }
+      } catch (error) {
+        console.error('Checkout error:', error);
+        alert('Something went wrong. Please try again or contact support.');
+        button.disabled = false;
+        button.textContent = originalText;
+        button.classList.remove('loading');
+      }
+    }
+    
+    // Initialize on page load
+    initStripe();
+  </script>
+</body>
+</html>

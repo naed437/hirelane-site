@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leads CRM — HireLane Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #f97316;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .header-actions { display: flex; gap: 12px; }
+    
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--card); }
+    .nav-links a.active { color: var(--accent); background: rgba(249, 115, 22, 0.1); }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-value.yellow { color: var(--yellow); }
+    .stat-value.blue { color: var(--blue); }
+    .stat-value.accent { color: var(--accent); }
+    .stat-label { font-size: 13px; color: var(--muted); }
+    
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .section-body {
+      padding: 0;
+    }
+    
+    .filters {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--text); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    td { font-size: 14px; }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    tr:last-child td { border-bottom: none; }
+    
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge.new { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .badge.contacted { background: rgba(234, 179, 8, 0.15); color: #fbbf24; }
+    .badge.qualified { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .badge.converted { background: rgba(34, 197, 94, 0.3); color: #22c55e; }
+    .badge.lost { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    
+    .source-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--border);
+      color: var(--muted);
+    }
+    
+    .email-status {
+      display: flex;
+      gap: 6px;
+    }
+    .email-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .email-dot.sent { background: var(--green); }
+    .email-dot.pending { background: var(--yellow); }
+    
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: #ea580c; }
+    .btn-secondary {
+      background: var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: #3f3f46; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      padding: 8px 12px;
+    }
+    .btn-ghost:hover { color: var(--text); background: var(--border); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    
+    #error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 600; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .modal-body { padding: 24px; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    
+    /* Email sequence section */
+    .sequence-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .sequence-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .sequence-item.sent { border-color: var(--green); }
+    .sequence-item.pending { border-color: var(--yellow); }
+    .sequence-day { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .sequence-status { font-size: 11px; font-weight: 600; }
+    .sequence-status.sent { color: var(--green); }
+    .sequence-status.pending { color: var(--yellow); }
+    
+    .lead-notes {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 200;
+    }
+    .toast.show { display: block; animation: slideIn 0.3s ease; }
+    .toast.success { border-color: var(--green); }
+    .toast.error { border-color: var(--red); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-links">
+      <a href="admin.html">Dashboard</a>
+      <a href="leads.html" class="active">Leads CRM</a>
+    </div>
+    
+    <div class="header">
+      <h1>📋 Leads CRM</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="processEmails()">📧 Process Follow-ups</button>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Lead</button>
+      </div>
+    </div>
+    
+    <div id="error"></div>
+    
+    <div class="stats-grid" id="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">-</div>
+        <div class="stat-label">Total Leads</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value blue" id="stat-new">-</div>
+        <div class="stat-label">New</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value yellow" id="stat-contacted">-</div>
+        <div class="stat-label">Contacted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value green" id="stat-qualified">-</div>
+        <div class="stat-label">Qualified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value accent" id="stat-converted">-</div>
+        <div class="stat-label">Converted</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-header">
+        <h2>All Leads</h2>
+        <span id="lead-count" style="color: var(--muted); font-size: 14px;">0 leads</span>
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="new">New</button>
+        <button class="filter-btn" data-filter="contacted">Contacted</button>
+        <button class="filter-btn" data-filter="qualified">Qualified</button>
+        <button class="filter-btn" data-filter="converted">Converted</button>
+        <button class="filter-btn" data-filter="lost">Lost</button>
+      </div>
+      <div class="section-body">
+        <table id="leads-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Company</th>
+              <th>Status</th>
+              <th>Source</th>
+              <th>Email Sequence</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leads-body">
+            <tr><td colspan="8" class="empty">
+              <div class="empty-icon">📭</div>
+              <p>Loading leads...</p>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-header">
+        <h2>📧 Pending Follow-up Emails</h2>
+      </div>
+      <div class="section-body">
+        <table id="pending-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Company</th>
+              <th>Email Type</th>
+              <th>Days Since Signup</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-body">
+            <tr><td colspan="5" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Lead Modal -->
+  <div class="modal-overlay" id="leadModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add New Lead</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="leadForm">
+          <input type="hidden" id="leadId">
+          <div class="form-group">
+            <label for="leadName">Name</label>
+            <input type="text" id="leadName" placeholder="John Smith" required>
+          </div>
+          <div class="form-group">
+            <label for="leadEmail">Email</label>
+            <input type="email" id="leadEmail" placeholder="john@company.com" required>
+          </div>
+          <div class="form-group">
+            <label for="leadCompany">Company</label>
+            <input type="text" id="leadCompany" placeholder="Acme Inc.">
+          </div>
+          <div class="form-group">
+            <label for="leadStatus">Status</label>
+            <select id="leadStatus">
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="converted">Converted</option>
+              <option value="lost">Lost</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="leadSource">Source</label>
+            <select id="leadSource">
+              <option value="landing_page">Landing Page</option>
+              <option value="referral">Referral</option>
+              <option value="outbound">Outbound</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="leadNotes">Notes</label>
+            <textarea id="leadNotes" placeholder="Add notes about this lead..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveLead()">Save Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="detailTitle">Lead Details</h3>
+        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="detailBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDetailModal()">Close</button>
+        <button class="btn btn-primary" id="editDetailBtn">Edit Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = 'http://localhost:8000/api';
+    let allLeads = [];
+    let currentFilter = 'all';
+
+    async function fetchData(endpoint, options = {}) {
+      try {
+        const res = await fetch(API_BASE + endpoint, options);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        showError(`Failed to fetch ${endpoint}: ${err.message}`);
+        return null;
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast show ${type}`;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '-';
+      return new Date(iso).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      });
+    }
+
+    // Stats
+    async function loadStats() {
+      const stats = await fetchData('/leads/stats/summary');
+      if (stats) {
+        document.getElementById('stat-total').textContent = stats.total || 0;
+        document.getElementById('stat-new').textContent = stats.by_status?.new || 0;
+        document.getElementById('stat-contacted').textContent = stats.by_status?.contacted || 0;
+        document.getElementById('stat-qualified').textContent = stats.by_status?.qualified || 0;
+        document.getElementById('stat-converted').textContent = stats.by_status?.converted || 0;
+      }
+    }
+
+    // Leads
+    async function loadLeads() {
+      const data = await fetchData('/leads');
+      const tbody = document.getElementById('leads-body');
+      
+      if (!data || !data.leads || data.leads.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">
+          <div class="empty-icon">📭</div>
+          <p>No leads yet. Add your first lead or wait for form submissions!</p>
+        </td></tr>`;
+        document.getElementById('lead-count').textContent = '0 leads';
+        return;
+      }
+
+      allLeads = data.leads.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      renderLeads();
+    }
+
+    function renderLeads() {
+      const tbody = document.getElementById('leads-body');
+      let filtered = allLeads;
+      
+      if (currentFilter !== 'all') {
+        filtered = allLeads.filter(l => l.status === currentFilter);
+      }
+      
+      document.getElementById('lead-count').textContent = `${filtered.length} lead${filtered.length !== 1 ? 's' : ''}`;
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">
+          <div class="empty-icon">🔍</div>
+          <p>No leads match this filter</p>
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(lead => {
+        const seq = lead.email_sequence || {};
+        const d0 = seq.day_0_sent ? 'sent' : 'pending';
+        const d3 = seq.day_3_sent ? 'sent' : 'pending';
+        const d7 = seq.day_7_sent ? 'sent' : 'pending';
+        
+        return `
+          <tr>
+            <td><strong>${lead.name || '-'}</strong></td>
+            <td>${lead.email}</td>
+            <td>${lead.company || '-'}</td>
+            <td><span class="badge ${lead.status}">${lead.status}</span></td>
+            <td><span class="source-badge">${lead.source || 'unknown'}</span></td>
+            <td>
+              <div class="email-status" title="Day 0 / Day 3 / Day 7">
+                <span class="email-dot ${d0}" title="Day 0: ${d0}"></span>
+                <span class="email-dot ${d3}" title="Day 3: ${d3}"></span>
+                <span class="email-dot ${d7}" title="Day 7: ${d7}"></span>
+              </div>
+            </td>
+            <td>${formatDate(lead.created_at)}</td>
+            <td class="actions">
+              <button class="btn btn-ghost btn-sm" onclick="viewLead('${lead.id}')">View</button>
+              <button class="btn btn-ghost btn-sm" onclick="editLead('${lead.id}')">Edit</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Pending emails
+    async function loadPendingEmails() {
+      const data = await fetchData('/emails/pending');
+      const tbody = document.getElementById('pending-body');
+      
+      if (!data || !data.pending || data.pending.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">✅ All emails sent! No pending follow-ups.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.pending.map(item => `
+        <tr>
+          <td>${item.email}</td>
+          <td>${item.company || '-'}</td>
+          <td><span class="badge contacted">${item.email_type.replace('_', ' ')}</span></td>
+          <td>${item.days_since_created} days</td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="sendEmail('${item.lead_id}', '${item.email_type}')">
+              Send Now
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderLeads();
+      });
+    });
+
+    // Modal functions
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Lead';
+      document.getElementById('leadForm').reset();
+      document.getElementById('leadId').value = '';
+      document.getElementById('leadModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('leadModal').classList.remove('show');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('show');
+    }
+
+    async function editLead(id) {
+      const lead = allLeads.find(l => l.id === id);
+      if (!lead) return;
+      
+      document.getElementById('modalTitle').textContent = 'Edit Lead';
+      document.getElementById('leadId').value = id;
+      document.getElementById('leadName').value = lead.name || '';
+      document.getElementById('leadEmail').value = lead.email || '';
+      document.getElementById('leadCompany').value = lead.company || '';
+      document.getElementById('leadStatus').value = lead.status || 'new';
+      document.getElementById('leadSource').value = lead.source || 'landing_page';
+      document.getElementById('leadNotes').value = lead.notes || '';
+      
+      document.getElementById('leadModal').classList.add('show');
+    }
+
+    function viewLead(id) {
+      const lead = allLeads.find(l => l.id === id);
+      if (!lead) return;
+      
+      const seq = lead.email_sequence || {};
+      
+      document.getElementById('detailTitle').textContent = lead.name || lead.company || 'Lead Details';
+      document.getElementById('editDetailBtn').onclick = () => {
+        closeDetailModal();
+        editLead(id);
+      };
+      
+      document.getElementById('detailBody').innerHTML = `
+        <div class="form-group">
+          <label>Email</label>
+          <div style="font-size: 15px;">${lead.email}</div>
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <div style="font-size: 15px;">${lead.company || '-'}</div>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <span class="badge ${lead.status}">${lead.status}</span>
+        </div>
+        <div class="form-group">
+          <label>Source</label>
+          <span class="source-badge">${lead.source || 'unknown'}</span>
+        </div>
+        <div class="form-group">
+          <label>Email Sequence</label>
+          <div class="sequence-info">
+            <div class="sequence-item ${seq.day_0_sent ? 'sent' : 'pending'}">
+              <div class="sequence-day">Day 0</div>
+              <div class="sequence-status ${seq.day_0_sent ? 'sent' : 'pending'}">${seq.day_0_sent ? '✓ Sent' : 'Pending'}</div>
+            </div>
+            <div class="sequence-item ${seq.day_3_sent ? 'sent' : 'pending'}">
+              <div class="sequence-day">Day 3</div>
+              <div class="sequence-status ${seq.day_3_sent ? 'sent' : 'pending'}">${seq.day_3_sent ? '✓ Sent' : 'Pending'}</div>
+            </div>
+            <div class="sequence-item ${seq.day_7_sent ? 'sent' : 'pending'}">
+              <div class="sequence-day">Day 7</div>
+              <div class="sequence-status ${seq.day_7_sent ? 'sent' : 'pending'}">${seq.day_7_sent ? '✓ Sent' : 'Pending'}</div>
+            </div>
+          </div>
+        </div>
+        ${lead.job_title ? `
+          <div class="form-group">
+            <label>Job Title</label>
+            <div style="font-size: 15px;">${lead.job_title}</div>
+          </div>
+        ` : ''}
+        ${lead.notes ? `
+          <div class="form-group">
+            <label>Notes / Job Description</label>
+            <div class="lead-notes">${lead.notes}</div>
+          </div>
+        ` : ''}
+        <div class="form-group">
+          <label>Created</label>
+          <div style="font-size: 14px; color: var(--muted);">${formatDate(lead.created_at)}</div>
+        </div>
+      `;
+      
+      document.getElementById('detailModal').classList.add('show');
+    }
+
+    async function saveLead() {
+      const id = document.getElementById('leadId').value;
+      const leadData = {
+        name: document.getElementById('leadName').value,
+        email: document.getElementById('leadEmail').value,
+        company: document.getElementById('leadCompany').value,
+        status: document.getElementById('leadStatus').value,
+        source: document.getElementById('leadSource').value,
+        notes: document.getElementById('leadNotes').value
+      };
+
+      try {
+        let result;
+        if (id) {
+          // Update existing
+          result = await fetchData(`/leads/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(leadData)
+          });
+        } else {
+          // Create new
+          result = await fetchData('/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(leadData)
+          });
+        }
+
+        if (result && result.success) {
+          showToast(id ? 'Lead updated!' : 'Lead created!');
+          closeModal();
+          loadLeads();
+          loadStats();
+        }
+      } catch (err) {
+        showError('Failed to save lead: ' + err.message);
+      }
+    }
+
+    async function sendEmail(leadId, emailType) {
+      const result = await fetchData(`/emails/send/${leadId}/${emailType}`, { method: 'POST' });
+      if (result && result.success) {
+        showToast(`${emailType.replace('_', ' ')} email sent!`);
+        loadPendingEmails();
+        loadLeads();
+      }
+    }
+
+    async function processEmails() {
+      const result = await fetchData('/emails/process-pending', { method: 'POST' });
+      if (result && result.success) {
+        showToast(`Processed ${result.processed} follow-up emails!`);
+        loadPendingEmails();
+        loadLeads();
+      }
+    }
+
+    // Initial load
+    loadStats();
+    loadLeads();
+    loadPendingEmails();
+
+    // Refresh every 30s
+    setInterval(() => {
+      loadStats();
+      loadLeads();
+      loadPendingEmails();
+    }, 30000);
+  </script>
+</body>
+</html>
